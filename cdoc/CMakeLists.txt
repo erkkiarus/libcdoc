@@ -128,6 +128,7 @@ if(SWIG_FOUND)
     include(${SWIG_USE_FILE})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     set_property(SOURCE ../libcdoc.i PROPERTY CPLUSPLUS ON)
+    set_property(SOURCE ../libcdoc_cs.i PROPERTY CPLUSPLUS ON)
     if(JAVA_INCLUDE_PATH)
         file(COPY CDocException.java DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/java)
         file(COPY IStreamSource.java DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/java)
@@ -168,8 +169,9 @@ if(SWIG_FOUND)
 	# TODO: Fix Python wrapping
     endif()
 
-    set(CMAKE_SWIG_FLAGS -namespace cdoc)
-    swig_add_library(cdoc_csharp LANGUAGE csharp SOURCES ../libcdoc.i OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/csharp)
+    file(COPY CDocException.cs DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/csharp)
+    set(CMAKE_SWIG_FLAGS -namespace OpenEid.CDoc)
+    swig_add_library(cdoc_csharp LANGUAGE csharp SOURCES ../libcdoc_cs.i OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/csharp)
     target_link_libraries(cdoc_csharp cdoc_ver cdoc)
     set_target_properties(cdoc_csharp PROPERTIES
         SWIG_COMPILE_DEFINITIONS $<$<PLATFORM_ID:Windows>:SWIGWIN>
