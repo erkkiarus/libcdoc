@@ -23,10 +23,12 @@
 #include "CDoc.h"
 #include "Io.h"
 #include "Configuration.h"
-#include "Lock.h"
 #include "CDocWriter.h"
 #include "CDocReader.h"
+#include "Lock.h"
+#include "NetworkBackend.h"
 #include "PKCS11Backend.h"
+#include "Recipient.h"
 #include "Utils.h"
 #include "Wrapper.h"
 #include <iostream>
@@ -89,7 +91,7 @@ extern "C"
 %typemap(freearg) std::vector<uint8_t>
 %{ delete $1; %}
 %apply std::vector<uint8_t> { std::vector<uint8_t> const & };
-%apply std::vector<uint8_t> { std::vector<uint8_t> & };
+// %apply std::vector<uint8_t> { std::vector<uint8_t> & };
 
 // Handle standard C++ types
 %include "arrays_csharp.i"
@@ -219,8 +221,8 @@ extern "C"
 %ignore libcdoc::Recipient::cert;
 %ignore libcdoc::Recipient::buildLabel(std::vector<std::pair<std::string_view, std::string_view>> components);
 %extend libcdoc::Recipient {
-                            std::vector<uint8_t> getRcptKey() {
-                                                              return $self->rcpt_key;
+    std::vector<uint8_t> getRcptKey() {
+    return $self->rcpt_key;
 }
 void setRcptKey(const std::vector<uint8_t>& key) {
     $self->rcpt_key = key;
@@ -272,7 +274,7 @@ static std::string buildLabel(const std::vector<std::string>& values) {
 // Configuration
 //
 
-%typemap(javacode) libcdoc::Configuration %{
+%typemap(cscode) libcdoc::Configuration %{
 public static readonly string KEYSERVER_SEND_URL = "KEYSERVER_SEND_URL";
 public static readonly string KEYSERVER_FETCH_URL = "KEYSERVER_FETCH_URL";
 %}
@@ -297,6 +299,7 @@ public static readonly string KEYSERVER_FETCH_URL = "KEYSERVER_FETCH_URL";
 #define CDOC_EXPORT
 // fixme: Remove this in production
 #define LIBCDOC_TESTING 1
+#define CDOC_DISABLE_MOVE(x)
 
 %include "CDoc.h"
 %include "Wrapper.h"
